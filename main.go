@@ -2,7 +2,10 @@ package main
 
 import "fmt"
 
-func readInputCurrency() float64 {
+const USDToEUR = 0.92
+const USDToRUB = 85.41
+
+func getInput() float64 {
 	var amount float64
 	fmt.Print("Enter the amount of the original currency:")
 	fmt.Scan(&amount)
@@ -10,14 +13,13 @@ func readInputCurrency() float64 {
 }
 
 func convertCurrency(amount float64, sourceCurrency string, targetCurrency string) float64 {
-
+	return 0
 }
 
 func main() {
-	const USDToEUR = 0.92
-	const USDToRUB = 85.41
+	amount := getInput()
 
-	// userInput := readInputCurrency()
 	EURToRUB := USDToRUB / USDToEUR
 	fmt.Println(EURToRUB)
+
 }
