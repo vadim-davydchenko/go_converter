@@ -16,9 +16,8 @@ const (
 func main() {
 	fmt.Println("__Converter currency__")
 	sourceCurrency, amount, targetCurrency := getInput()
-	fmt.Println(sourceCurrency)
-	fmt.Println(amount)
-	fmt.Println(targetCurrency)
+	convertAmount := convertCurrency(sourceCurrency, amount, targetCurrency)
+	fmt.Printf("Converted amount from %v %v = %.3f %v\n", amount, sourceCurrency, convertAmount, targetCurrency)
 }
 
 func getInput() (string, float64, string) {
@@ -33,6 +32,7 @@ func getInput() (string, float64, string) {
 		}
 		fmt.Println("Invalid source currency. Please enter USD, EUR,RUB")
 	}
+
 	for {
 		fmt.Print("Entering the amount:")
 		_, err := fmt.Scan(&amount)
@@ -42,6 +42,7 @@ func getInput() (string, float64, string) {
 		fmt.Println("Invalid amount.Please enter a number and the number must be greater than zero")
 		fmt.Scanln()
 	}
+
 	for {
 		switch sourceCurrency {
 		case "USD":
@@ -63,5 +64,30 @@ func getInput() (string, float64, string) {
 }
 
 func convertCurrency(sourceCurrency string, amount float64, targetCurrency string) float64 {
+	switch sourceCurrency {
+	case "USD":
+		switch targetCurrency {
+		case "EUR":
+			return amount * USDToEUR
+		case "RUB":
+			return amount * USDToRUB
+		}
+
+	case "EUR":
+		switch targetCurrency {
+		case "USD":
+			return amount * EURToUSD
+		case "RUB":
+			return amount * EURToRUB
+		}
+
+	case "RUB":
+		switch targetCurrency {
+		case "USD":
+			return amount * RUBToUSD
+		case "EUR":
+			return amount * RUBToEUR
+		}
+	}
 	return 0
 }
