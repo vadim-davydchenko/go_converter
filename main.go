@@ -30,7 +30,7 @@ func getInput() (string, float64, string) {
 		if sourceCurrency == "USD" || sourceCurrency == "EUR" || sourceCurrency == "RUB" {
 			break
 		}
-		fmt.Println("Invalid source currency. Please enter USD, EUR,RUB")
+		fmt.Println("Invalid source currency. Please enter USD,EUR,RUB")
 	}
 
 	for {
