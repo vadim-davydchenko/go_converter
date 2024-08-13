@@ -1,3 +1,3 @@
-module github.com/vadim-davydchenko/go-converter-currency
+module go-pet-projects/converter
 
 go 1.22.5
