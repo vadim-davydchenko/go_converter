@@ -1,2 +1,2 @@
-# go_converter
-Currency conversion utility between USD EUR RUB 
+# Pet Projects
+`converter` - CLI-utility for converting currencies between USD EUR RUB
