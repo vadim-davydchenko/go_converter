@@ -25,7 +25,7 @@ var currencyMap = map[string]float64{
 func main() {
 	fmt.Println("__Converter currency__")
 	sourceCurrency, amount, targetCurrency := getInput()
-	convertAmount := convertCurrency(sourceCurrency, amount, targetCurrency)
+	convertAmount := convertCurrency(&currencyMap, sourceCurrency, amount, targetCurrency)
 	fmt.Printf("Converted amount from %v %v = %.2f %v\n", amount, sourceCurrency, convertAmount, targetCurrency)
 }
 
@@ -72,9 +72,9 @@ func getInput() (string, float64, string) {
 	return sourceCurrency, amount, targetCurrency
 }
 
-func convertCurrency(sourceCurrency string, amount float64, targetCurrency string) float64 {
+func convertCurrency(currencyMap *map[string]float64, sourceCurrency string, amount float64, targetCurrency string) float64 {
 	currencynKey := sourceCurrency + targetCurrency
-	if course, exists := currencyMap[currencynKey]; exists {
+	if course, exists := (*currencyMap)[currencynKey]; exists {
 		return amount * course
 	}
 	return 0
