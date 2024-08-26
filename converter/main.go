@@ -13,11 +13,20 @@ const (
 	RUBToEUR = 1 / EURToRUB
 )
 
+var currencyMap = map[string]float64{
+	"USDEUR": USDToEUR,
+	"USDRUB": USDToRUB,
+	"EURUSD": EURToUSD,
+	"EURRUB": EURToRUB,
+	"RUBUSD": RUBToUSD,
+	"RUBEUR": RUBToEUR,
+}
+
 func main() {
 	fmt.Println("__Converter currency__")
 	sourceCurrency, amount, targetCurrency := getInput()
-	convertAmount := convertCurrency(sourceCurrency, amount, targetCurrency)
-	fmt.Printf("Converted amount from %v %v = %.3f %v\n", amount, sourceCurrency, convertAmount, targetCurrency)
+	convertAmount := convertCurrency(&currencyMap, sourceCurrency, amount, targetCurrency)
+	fmt.Printf("Converted amount from %v %v = %.2f %v\n", amount, sourceCurrency, convertAmount, targetCurrency)
 }
 
 func getInput() (string, float64, string) {
@@ -63,31 +72,10 @@ func getInput() (string, float64, string) {
 	return sourceCurrency, amount, targetCurrency
 }
 
-func convertCurrency(sourceCurrency string, amount float64, targetCurrency string) float64 {
-	switch sourceCurrency {
-	case "USD":
-		switch targetCurrency {
-		case "EUR":
-			return amount * USDToEUR
-		case "RUB":
-			return amount * USDToRUB
-		}
-
-	case "EUR":
-		switch targetCurrency {
-		case "USD":
-			return amount * EURToUSD
-		case "RUB":
-			return amount * EURToRUB
-		}
-
-	case "RUB":
-		switch targetCurrency {
-		case "USD":
-			return amount * RUBToUSD
-		case "EUR":
-			return amount * RUBToEUR
-		}
+func convertCurrency(currencyMap *map[string]float64, sourceCurrency string, amount float64, targetCurrency string) float64 {
+	currencynKey := sourceCurrency + targetCurrency
+	if course, exists := (*currencyMap)[currencynKey]; exists {
+		return amount * course
 	}
 	return 0
 }
