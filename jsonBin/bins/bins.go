@@ -3,35 +3,39 @@ package bins
 import "time"
 
 type Bin struct {
-	id        string
-	private   bool
-	createdAt time.Time
-	name      string
+	ID        string    `json:"id"`
+	Private   bool      `json:"private"`
+	CreatedAt time.Time `json:"created_at"`
+	Name      string    `json:"name"`
 }
 
 type BinList struct {
-	id        string
-	private   bool
-	createdAt time.Time
-	name      string
+	ID        string    `json:"id"`
+	Private   bool      `json:"private"`
+	CreatedAt time.Time `json:"created_at"`
+	Name      string    `json:"name"`
+	Bins      []Bin     `json:"bins"`
 }
 
 func createBin(id, name string, private bool) *Bin {
-	newBin := &Bin{
-		id:        id,
-		private:   private,
-		createdAt: time.Now(),
-		name:      name,
+	return &Bin{
+		ID:        id,
+		Private:   private,
+		CreatedAt: time.Now(),
+		Name:      name,
 	}
-	return newBin
 }
 
 func createBinList(id, name string, private bool) *BinList {
-	newBinList := &BinList{
-		id:        id,
-		private:   private,
-		createdAt: time.Now(),
-		name:      name,
+	return &BinList{
+		ID:        id,
+		Private:   private,
+		CreatedAt: time.Now(),
+		Name:      name,
+		Bins:      []Bin{},
 	}
-	return newBinList
+}
+
+func (bl *BinList) AddBin(bin Bin) {
+	bl.Bins = append(bl.Bins, bin)
 }
