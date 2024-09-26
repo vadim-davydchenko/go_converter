@@ -45,3 +45,12 @@ func LoadBinListFile(filePath string) (*bins.BinList, error) {
 	}
 	return &binList, nil
 }
+
+func LoadBinListBytes(data []byte) (*bins.BinList, error) {
+	var binList bins.BinList
+	err := json.Unmarshal(data, &binList)
+	if err != nil {
+		return nil, errors.New("error in the unmarshal JSON")
+	}
+	return &binList, nil
+}
