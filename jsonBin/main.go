@@ -3,11 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
+
+	"jsonBin/config"
 	"jsonBin/files"
 	"jsonBin/storage"
 )
 
 func main() {
+	cfg, err := config.NewConfig()
+	if err != nil {
+		fmt.Printf("error for initiliazation configuration: %v", err)
+	}
+	fmt.Printf("Uploaded key: %s\n", cfg.Key)
+
 	filePath := flag.String("file", "", "Path to JSON file")
 	flag.Parse()
 
