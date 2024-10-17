@@ -8,7 +8,8 @@ import (
 )
 
 type Config struct {
-	Key string
+	Key       string
+	MasterKey string
 }
 
 func NewConfig() (*Config, error) {
@@ -21,7 +22,14 @@ func NewConfig() (*Config, error) {
 	if key == "" {
 		return nil, fmt.Errorf("variable environment KEY don't found")
 	}
+
+	masterKey := os.Getenv("X_MASTER_KEY")
+	if masterKey == "" {
+		return nil, fmt.Errorf("environment variable X-MASTER-KEY not found")
+	}
+
 	return &Config{
-		Key: key,
+		Key:       key,
+		MasterKey: masterKey,
 	}, nil
 }

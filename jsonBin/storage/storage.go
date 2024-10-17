@@ -3,51 +3,118 @@ package storage
 import (
 	"encoding/json"
 	"fmt"
-	"jsonBin/bins"
 	"os"
 )
 
+type LocalBinInfo struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type StorageService interface {
-	SaveBinListFile(filePath string, binList *bins.BinList) error
-	LoadBinListBytes(data []byte) (*bins.BinList, error)
-	LoadBinListFile(filePath string) (*bins.BinList, error)
+	SaveBinInfo(id, name string) error
+	UpdateLocalBinInfo(id, filePath string) error
+	DeleteLocalBinInfo(id string) error
+	ListBins() ([]LocalBinInfo, error)
 }
 
-type FileStorage struct {
-}
+type FileStorage struct{}
 
-func (s *FileStorage) SaveBinListFile(filePath string, binList *bins.BinList) error {
-	data, err := json.Marshal(binList)
+func (fs *FileStorage) SaveBinInfo(id, name string) error {
+	file, err := os.OpenFile("local_bins.json", os.O_RDWR|os.O_CREATE, 0o644)
 	if err != nil {
-		return fmt.Errorf("error for marhsal JSON: %v", err)
-	}
-
-	file, err := os.Create(filePath)
-	if err != nil {
-		return fmt.Errorf("error in the creating file: %v", err)
+		return fmt.Errorf("error opening file: %v", err)
 	}
 	defer file.Close()
 
-	_, err = file.Write(data)
-	if err != nil {
-		return fmt.Errorf("error in the writing file: %v", err)
+	var bins []LocalBinInfo
+	err = json.NewDecoder(file).Decode(&bins)
+	if err != nil && err.Error() != "EOF" {
+		return fmt.Errorf("error decoding existing data: %v", err)
 	}
+
+	bins = append(bins, LocalBinInfo{ID: id, Name: name})
+
+	file.Seek(0, 0)
+	err = json.NewEncoder(file).Encode(bins)
+	if err != nil {
+		return fmt.Errorf("error saving file: %v", err)
+	}
+
 	return nil
 }
 
-func (s *FileStorage) LoadBinListBytes(data []byte) (*bins.BinList, error) {
-	var binList bins.BinList
-	err := json.Unmarshal(data, &binList)
+func (fs *FileStorage) UpdateLocalBinInfo(id, filePath string) error {
+	file, err := os.OpenFile("local_bins.json", os.O_RDWR|os.O_CREATE, 0o644)
 	if err != nil {
-		return nil, fmt.Errorf("error in the unmarshal JSON: %v", err)
+		return fmt.Errorf("error opening file: %v", err)
 	}
-	return &binList, nil
+	defer file.Close()
+
+	var bins []LocalBinInfo
+	err = json.NewDecoder(file).Decode(&bins)
+	if err != nil && err.Error() != "EOF" {
+		return fmt.Errorf("error decoding existing data: %v", err)
+	}
+
+	for i, bin := range bins {
+		if bin.ID == id {
+			bins[i].Name = filePath
+			break
+		}
+	}
+
+	file.Seek(0, 0)
+	err = json.NewEncoder(file).Encode(bins)
+	if err != nil {
+		return fmt.Errorf("error updating local file: %v", err)
+	}
+
+	return nil
 }
 
-func (s *FileStorage) LoadBinListFile(filePath string) (*bins.BinList, error) {
-	data, err := os.ReadFile(filePath)
+func (fs *FileStorage) DeleteLocalBinInfo(id string) error {
+	file, err := os.OpenFile("local_bins.json", os.O_RDWR|os.O_CREATE, 0o644)
 	if err != nil {
-		return nil, fmt.Errorf("error in the reading file: %v", err)
+		return fmt.Errorf("error opening file: %v", err)
 	}
-	return s.LoadBinListBytes(data)
+	defer file.Close()
+
+	var bins []LocalBinInfo
+	err = json.NewDecoder(file).Decode(&bins)
+	if err != nil && err.Error() != "EOF" {
+		return fmt.Errorf("error decoding existing data: %v", err)
+	}
+
+	for i, bin := range bins {
+		if bin.ID == id {
+			bins = append(bins[:i], bins[i+1:]...)
+			break
+		}
+	}
+
+	file.Truncate(0)
+	file.Seek(0, 0)
+	err = json.NewEncoder(file).Encode(bins)
+	if err != nil {
+		return fmt.Errorf("error saving file: %v", err)
+	}
+
+	return nil
+}
+
+func (fs *FileStorage) ListBins() ([]LocalBinInfo, error) {
+	file, err := os.Open("local_bins.json")
+	if err != nil {
+		return nil, fmt.Errorf("error opening local bins file: %v", err)
+	}
+	defer file.Close()
+
+	var bins []LocalBinInfo
+	err = json.NewDecoder(file).Decode(&bins)
+	if err != nil && err.Error() != "EOF" {
+		return nil, fmt.Errorf("error decoding bin data: %v", err)
+	}
+
+	return bins, nil
 }
